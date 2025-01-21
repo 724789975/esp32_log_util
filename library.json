@@ -1,0 +1,15 @@
+{
+	"name": "log_util",
+	"keywords": "ESP32, log, utility",
+	"description": "log for esp32",
+	"repository":
+	{
+	  "type": "git",
+	  "url": "https://github.com/724789975/esp32_log_util.git"
+	},
+	"version": "0.1.0",
+	"frameworks": "arduino",
+	"platforms": "*"
+}
+  
+  
