@@ -12,29 +12,33 @@ namespace LOG_UTIL
 {
 	class LogUtil
 	{
-	private:
-		char log_buff[512];
-		Stream *target{nullptr};
-		LogUtil() = default;
-
 	public:
-		static LogUtil &getInstance()
+		static LogUtil &Instance()
 		{
 			static LogUtil instance;
 			return instance;
 		}
-		void setLogTarget(Stream &stream)
+		void SetLogTarget(Stream &stream)
 		{
-			target = &stream;
+			m_pTarget = &stream;
+		};
+		void SetLogLevel(uint8_t level)
+		{
+			m_btLogLevel = level;
 		};
 		~LogUtil() = default;
 		LogUtil(const LogUtil &) = delete;
 		LogUtil &operator=(const LogUtil &) = delete;
 
 	public:
-		int log(uint8_t level, const char *format, ...)
+		int Log(uint8_t level, const char *format, ...)
 		{
-			if (target != nullptr)
+			if (level < m_btLogLevel)
+			{
+				return 0;
+			}
+			
+			if (m_pTarget != nullptr)
 			{
 				char loc_buf[64];
 				char *temp = loc_buf;
@@ -60,7 +64,7 @@ namespace LOG_UTIL
 					len = vsnprintf(temp, len + 1, format, arg);
 				}
 				va_end(arg);
-				len = target->write((uint8_t *)temp, len);
+				len = m_pTarget->write((uint8_t *)temp, len);
 				if (temp != loc_buf)
 				{
 					free(temp);
@@ -69,16 +73,23 @@ namespace LOG_UTIL
 			}
 			return -1;
 		}
+	private:
+		Stream *m_pTarget{nullptr};
+		uint8_t m_btLogLevel{LOG_LEVEL_DEBUG};
+		LogUtil() = default;
 	};
+
 
 }; // namespace LOG_UTIL
 
-#define log_set_target(stream) LOG_UTIL::LogUtil::getInstance().setLogTarget(stream);
+#define log_set_level(level) LOG_UTIL::LogUtil::Instance().SetLogLevel(level);
+
+#define log_set_target(stream) LOG_UTIL::LogUtil::Instance().SetLogTarget(stream);
 
 #define log_debug(log_name, fmt, arg...)                                                           \
     do                                                                                                 \
     {                                                                                                  \
-        LOG_UTIL::LogUtil::getInstance().log(LOG_LEVEL_DEBUG, "[%s][%d]@%d>D:" fmt "\n", log_name, (int)millis(), __LINE__, ##arg); \
+        LOG_UTIL::LogUtil::Instance().Log(LOG_LEVEL_DEBUG, "[%s][%d]@%d>D:" fmt "\n", log_name, (int)millis(), __LINE__, ##arg); \
     } while (0);
 
 #endif // __LOG_UTIL_H__
