@@ -6,6 +6,7 @@
 #define LOG_LEVEL_DEBUG 0
 #define LOG_LEVEL_INFO 1
 #define LOG_LEVEL_WARN 2
+#define LOG_LEVEL_ERROR 4
 #define LOG_LEVEL_NONE 8
 
 namespace LOG_UTIL
@@ -90,6 +91,18 @@ namespace LOG_UTIL
     do                                                                                                 \
     {                                                                                                  \
         LOG_UTIL::LogUtil::Instance().Log(LOG_LEVEL_DEBUG, "[%s][%d]@%d>D:" fmt "\n", log_name, (int)millis(), __LINE__, ##arg); \
+    } while (0);
+
+#define log_info(log_name, fmt, arg...)                                                           \
+    do                                                                                                 \
+    {                                                                                                  \
+        LOG_UTIL::LogUtil::Instance().Log(LOG_LEVEL_INFO, "[%s][%d]@%d>D:" fmt "\n", log_name, (int)millis(), __LINE__, ##arg); \
+    } while (0);
+
+#define log_error(log_name, fmt, arg...)                                                           \
+    do                                                                                                 \
+	{                                                                                                  \
+        LOG_UTIL::LogUtil::Instance().Log(LOG_LEVEL_ERROR, "[%s][%d]@%d>E:" fmt "\n", log_name, (int)millis(), __LINE__, ##arg); \
     } while (0);
 
 #endif // __LOG_UTIL_H__
